@@ -1,5 +1,21 @@
-local clangd = vim.fn.exepath("clangd")
-local clangxx = vim.fn.exepath("clang++")
+local clang_fork_root = vim.env.CLANG_FORK_ROOT or vim.fn.expand("~/.local/opt/clang-cxx26")
+
+local function first_executable(candidates)
+  for _, candidate in ipairs(candidates) do
+    if candidate ~= "" and vim.fn.executable(candidate) == 1 then
+      return candidate
+    end
+  end
+end
+
+local clangd = first_executable({
+  clang_fork_root .. "/bin/clangd",
+  vim.fn.exepath("clangd"),
+})
+local clangxx = first_executable({
+  clang_fork_root .. "/bin/clang++",
+  vim.fn.exepath("clang++"),
+})
 local clangd_cmd = {
   clangd,
   "--background-index",
