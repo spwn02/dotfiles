@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -eu
+
+session="${NYXARA_TMUX_SESSION:-Nyxara}"
+nyx_dir="${NYXARA_PROJECT_DIR:-$HOME/dev/cpp/Nyx}"
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}"
+
+if [ -n "${TMUX:-}" ]; then
+  exec "${SHELL:-/bin/sh}"
+fi
+
+if ! tmux has-session -t "$session" 2>/dev/null; then
+  if [ -d "$nyx_dir" ]; then
+    tmux new-session -d -s "$session" -n Nyx -c "$nyx_dir" 'nvim .'
+    tmux split-window -v -t "$session:Nyx" -c "$nyx_dir" "${SHELL:-/bin/sh}"
+  else
+    tmux new-session -d -s "$session" -n shell -c "$HOME" "${SHELL:-/bin/sh}"
+  fi
+  tmux new-window -d -t "$session:" -n config -c "$config_dir" "${SHELL:-/bin/sh}"
+  tmux select-window -t "$session:Nyx" 2>/dev/null || tmux select-window -t "$session:1"
+fi
+
+exec tmux attach-session -t "$session"

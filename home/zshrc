@@ -1,0 +1,23 @@
+# Cross-platform shell configuration for macOS and Linux.
+
+export EDITOR="${EDITOR:-nvim}"
+export VISUAL="${VISUAL:-$EDITOR}"
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
+
+if [[ -r "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]]; then
+  export ZSH="$HOME/.oh-my-zsh"
+  ZSH_THEME="robbyrussell"
+  plugins=(git colored-man-pages colorize tmux zoxide)
+  source "$ZSH/oh-my-zsh.sh"
+fi
+
+if command -v mise >/dev/null 2>&1; then
+  eval "$(mise activate zsh)"
+fi
+
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init zsh)"
+fi
+
+[[ -r "$XDG_CONFIG_HOME/zshrc.d/shortcuts.zsh" ]] && source "$XDG_CONFIG_HOME/zshrc.d/shortcuts.zsh"
